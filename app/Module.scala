@@ -1,6 +1,8 @@
 import java.time.Clock
 
-import com.google.inject.AbstractModule
+import com.google.inject.{AbstractModule, Provides}
+import dao.{ProductDataService, ProductDataServiceImpl, WalletDataServiceImpl}
+import services.{PurchaseService, PurchaseServiceImpl}
 
 /**
   * This class is a Guice module that tells Guice how to bind several
@@ -15,8 +17,8 @@ import com.google.inject.AbstractModule
 class Module extends AbstractModule {
 
   override def configure(): Unit = {
-    // Use the system clock as the default implementation of Clock
-    bind(classOf[Clock]).toInstance(Clock.systemDefaultZone)
+    // For real implementation, data layer service should also be injected via DI
+    bind(classOf[PurchaseService])
+      .toInstance(new PurchaseServiceImpl(new ProductDataServiceImpl, new WalletDataServiceImpl))
   }
-
 }
