@@ -10,11 +10,18 @@ object Messages {
   case class User(id: Long)
 
   //FIXME: check the implications for total items and remaining items, the way to compute time
-  case class ProductSale(product_id: Double, price: Double, currency: String, total_items: Int, items_left: Int, time_left: Long)
+  case class ProductSale(
+      product_id: Double,
+      price: Double,
+      currency: String,
+      total_items: Int,
+      items_left: Int,
+      time_left: Long
+  )
 
-  implicit val walletWrite : Writes[Wallet] = (
+  implicit val walletWrite: Writes[Wallet] = (
     (JsPath \ "id").write[Long] and
       (JsPath \ "balance").write[Double] and
       (JsPath \ "currency").write[String]
-    )(unlift(Wallet.unapply))
+  )(unlift(Wallet.unapply))
 }
