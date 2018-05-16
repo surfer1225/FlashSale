@@ -1,7 +1,7 @@
-package Model
+package model
 
 import play.api.libs.functional.syntax._
-import play.api.libs.json.{JsPath, Writes}
+import play.api.libs.json.{JsPath, Reads, Writes}
 
 object Messages {
 
@@ -19,6 +19,9 @@ object Messages {
       time_left: Long
   )
 
+  // all the implicit reads
+
+  // all the implicit writes
   implicit val walletWrite: Writes[Wallet] = (
     (JsPath \ "id").write[Long] and
       (JsPath \ "balance").write[Double] and

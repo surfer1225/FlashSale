@@ -1,9 +1,9 @@
 package controllers
 
-import Model.Messages._
 import javax.inject._
-import play.api.mvc._
+import model.Messages._
 import play.api.libs.json._
+import play.api.mvc._
 
 @Singleton
 class WalletController @Inject()(cc: ControllerComponents) extends AbstractController(cc) {
