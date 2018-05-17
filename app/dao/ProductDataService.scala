@@ -6,6 +6,8 @@ trait ProductDataService {
   def getProductInfo(productId: Long): ProductSale
 
   def getFlashSale(countryId: String): List[ProductSale]
+
+  def updateProductLeft(productId: Long, itemsLeft: Int): Boolean
 }
 
 class ProductDataServiceImpl extends ProductDataService {
@@ -20,4 +22,6 @@ class ProductDataServiceImpl extends ProductDataService {
       ProductSale(3, 30.0, "SGD", 3000, 300, 300000)
     )
   }
+
+  override def updateProductLeft(productId: Long, itemsLeft: Int): Boolean = ???
 }

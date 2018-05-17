@@ -2,7 +2,7 @@ import java.time.Clock
 
 import com.google.inject.{AbstractModule, Provides}
 import dao.{ProductDataService, ProductDataServiceImpl, WalletDataServiceImpl}
-import services.{PurchaseService, PurchaseServiceImpl}
+import services.{ExchangeRateServiceImpl, PurchaseService, PurchaseServiceImpl}
 
 /**
   * This class is a Guice module that tells Guice how to bind several
@@ -19,6 +19,8 @@ class Module extends AbstractModule {
   override def configure(): Unit = {
     // For real implementation, data layer service should also be injected via DI
     bind(classOf[PurchaseService])
-      .toInstance(new PurchaseServiceImpl(new ProductDataServiceImpl, new WalletDataServiceImpl))
+      .toInstance(
+        new PurchaseServiceImpl(new ProductDataServiceImpl, new WalletDataServiceImpl, new ExchangeRateServiceImpl)
+      )
   }
 }

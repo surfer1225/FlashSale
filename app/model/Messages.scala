@@ -9,6 +9,9 @@ object Messages {
   case class Wallet(id: Long, balance: Double, currency: String)
   case class User(id: Long)
 
+  // this case class is not used yet, it joins with ProductSale on product_id
+  case class ProductInfo(product_id: Double, name: String, description: String)
+
   //FIXME: check the implications for total items and remaining items, the way to compute time
   case class ProductSale(
       product_id: Double,
