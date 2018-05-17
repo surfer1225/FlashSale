@@ -12,6 +12,8 @@ trait PurchaseService {
 
   //TODO: redefine model later
   def getFlashSale(countryId: String): List[ProductSale]
+
+  def getWalletInfo(id: Long): Option[Wallet]
 }
 
 class PurchaseServiceImpl @Inject()(
@@ -24,9 +26,10 @@ class PurchaseServiceImpl @Inject()(
   override def makePurchase(productId: Long, userId: Long): Boolean = {
     //TODO: get data layer data for that product
     val productInfo = productDataService.getProductInfo(productId)
-    val walletInfo  = walletDataService.getWalletInfo(userId)
-
-    transferFund(walletInfo, productInfo.price, productInfo.currency)
+    walletDataService.getWalletInfo(userId) match {
+      case Some(walletInfo) => transferFund(walletInfo, productInfo.price, productInfo.currency)
+      case _                => false
+    }
   }
 
   override def getFlashSale(countryId: String): List[ProductSale] = {
@@ -55,4 +58,6 @@ class PurchaseServiceImpl @Inject()(
       false
     }
   }
+
+  override def getWalletInfo(id: Long): Option[Wallet] = walletDataService.getWalletInfo(id)
 }

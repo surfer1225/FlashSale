@@ -3,7 +3,7 @@ package dao
 import model.Messages.Wallet
 
 trait WalletDataService {
-  def getWalletInfo(userId: Long): Wallet
+  def getWalletInfo(walletId: Long): Option[Wallet]
 
   def credit(walletId: Long, amt: Double): Boolean
 
@@ -12,8 +12,9 @@ trait WalletDataService {
 }
 
 class WalletDataServiceImpl extends WalletDataService {
-  override def getWalletInfo(userId: Long): Wallet = {
-    Wallet(123, 100.0, "SGD")
+  override def getWalletInfo(walletId: Long): Option[Wallet] = {
+    //Some(Wallet(123, 100.0, "SGD"))
+    None
   }
 
   override def credit(walletId: Long, amt: Double): Boolean = {

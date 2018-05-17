@@ -16,8 +16,11 @@ class ProductController @Inject()(cc: ControllerComponents, purchaseService: Pur
         //TODO, add error handling for userId
         val userId = (body \ "user_id").as[Long]
 
-        purchaseService.makePurchase(productId, userId)
-        Ok
+        if (purchaseService.makePurchase(productId, userId)) {
+          Ok("Purchase Successful")
+        } else {
+          Ok("Purchase Failed")
+        }
       }
       .getOrElse {
         BadRequest("Expecting application/json request body")
