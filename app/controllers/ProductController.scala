@@ -13,10 +13,9 @@ class ProductController @Inject()(cc: ControllerComponents, purchaseService: Pur
     val jsBody: Option[JsValue] = request.body.asJson
     jsBody
       .map { body =>
+        //TODO, add error handling for userId
         val userId = (body \ "user_id").as[Long]
 
-        //TODO, add service/data layer to user userId and productId for processing
-        //TODO, add error handling for userId
         purchaseService.makePurchase(productId, userId)
         Ok
       }
@@ -25,6 +24,7 @@ class ProductController @Inject()(cc: ControllerComponents, purchaseService: Pur
       }
   }
 
+  // FIXME: change to JSON
   def getFlashSale(countryId: String) = Action {
     val flashSales = purchaseService.getFlashSale(countryId)
     flashSales.foreach(println)

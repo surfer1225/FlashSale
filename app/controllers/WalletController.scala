@@ -18,6 +18,7 @@ class WalletController @Inject()(cc: ControllerComponents) extends AbstractContr
     Ok(views.html.index("Your new application is ready."))
   }
 
+  // FIXME: change to JSON
   def getWallet(id: Long) = Action {
     Ok(Json.toJson(Wallet(id, 1.0, "SGD")))
   }
