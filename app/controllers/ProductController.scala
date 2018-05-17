@@ -24,4 +24,10 @@ class ProductController @Inject()(cc: ControllerComponents, purchaseService: Pur
         BadRequest("Expecting application/json request body")
       }
   }
+
+  def getFlashSale(countryId: String) = Action {
+    val flashSales = purchaseService.getFlashSale(countryId)
+    flashSales.foreach(println)
+    Ok
+  }
 }
