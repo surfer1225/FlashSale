@@ -41,11 +41,12 @@ class PurchaseServiceImplSpec extends Specification with Mockito {
 
       purchaseService.makePurchase(8,9) mustEqual false
     }
-    "return false if credit to company account fails" in {
+    "return true if transfer successful" in {
       walletDataService.debit(9, 10.0) returns true
       walletDataService.credit(1, 10.0) returns true
 
       purchaseService.makePurchase(8,9) mustEqual true
+      there was exactly(1)(productDataService).updateProductLeft(8)
     }
   }
   //scalastyle:on

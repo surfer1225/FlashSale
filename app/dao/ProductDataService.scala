@@ -2,12 +2,14 @@ package dao
 
 import model.Messages.ProductSale
 
+import scala.concurrent.Future
+
 trait ProductDataService {
   def getProduct(productId: Long): Option[ProductSale]
 
   def getFlashSale(countryId: String): List[ProductSale]
 
-  def updateProductLeft(productId: Long, itemsLeft: Int): Boolean
+  def updateProductLeft(productId: Long): Future[Unit]
 }
 
 class ProductDataServiceImpl extends ProductDataService {
@@ -23,5 +25,5 @@ class ProductDataServiceImpl extends ProductDataService {
     )
   }
 
-  override def updateProductLeft(productId: Long, itemsLeft: Int): Boolean = ???
+  override def updateProductLeft(productId: Long): Future[Unit] = ???
 }
