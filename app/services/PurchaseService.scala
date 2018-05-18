@@ -10,7 +10,6 @@ trait PurchaseService {
   //TODO: consider changing the return type to PurchaseStatus
   def makePurchase(productId: Long, userId: Long): Boolean
 
-  //TODO: redefine model later
   def getFlashSale(countryId: String): List[ProductSale]
 
   def getWalletInfo(id: Long): Option[Wallet]
@@ -24,11 +23,11 @@ class PurchaseServiceImpl @Inject()(
     with FlashSaleLogger {
 
   override def makePurchase(productId: Long, userId: Long): Boolean = {
-    //TODO: get data layer data for that product
-    val productInfo = productDataService.getProductInfo(productId)
-    walletDataService.getWalletInfo(userId) match {
-      case Some(walletInfo) => transferFund(walletInfo, productInfo.price, productInfo.currency)
-      case _                => false
+    val productInfoOpt = productDataService.getProduct(productId)
+    val walletInfoOpt  = walletDataService.getWalletInfo(userId)
+    (productInfoOpt, walletInfoOpt) match {
+      case (Some(productInfo), Some(walletInfo)) => transferFund(walletInfo, productInfo.price, productInfo.currency)
+      case _                                     => false
     }
   }
 
