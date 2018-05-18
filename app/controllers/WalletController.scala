@@ -21,6 +21,7 @@ class WalletController @Inject()(cc: ControllerComponents, purchaseService: Purc
   }
 
   def getWallet(id: Long): Action[AnyContent] = Action {
+    //TODO, catch id data type
     purchaseService.getWalletInfo(id) match {
       case Some(wallet) => Ok(Json.toJson(wallet))
       case _            => Ok("Wallet not found")

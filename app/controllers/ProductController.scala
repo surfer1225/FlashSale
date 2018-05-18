@@ -27,10 +27,8 @@ class ProductController @Inject()(cc: ControllerComponents, purchaseService: Pur
       }
   }
 
-  // FIXME: change to JSON
-  def getFlashSale(countryId: String) = Action {
+  def getFlashSale(countryId: String): Action[AnyContent] = Action {
     val flashSales = purchaseService.getFlashSale(countryId)
-    flashSales.foreach(println)
-    Ok
+    Ok(Json.toJson(flashSales))
   }
 }

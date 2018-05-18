@@ -10,7 +10,6 @@ trait PurchaseService {
   //TODO: consider changing the return type to PurchaseStatus
   def makePurchase(productId: Long, userId: Long): Boolean
 
-  //TODO: redefine model later
   def getFlashSale(countryId: String): List[ProductSale]
 
   def getWalletInfo(id: Long): Option[Wallet]
@@ -24,11 +23,11 @@ class PurchaseServiceImpl @Inject()(
     with FlashSaleLogger {
 
   override def makePurchase(productId: Long, userId: Long): Boolean = {
-    //TODO: get data layer data for that product
-    val productInfo = productDataService.getProductInfo(productId)
-    walletDataService.getWalletInfo(userId) match {
-      case Some(walletInfo) => transferFund(walletInfo, productInfo.price, productInfo.currency)
-      case _                => false
+    val productSaleOpt = productDataService.getProduct(productId)
+    val walletInfoOpt  = walletDataService.getWalletInfo(userId)
+    (productSaleOpt, walletInfoOpt) match {
+      case (Some(productSale), Some(walletInfo)) => transferFund(walletInfo, productSale)
+      case _                                     => false
     }
   }
 
@@ -39,14 +38,20 @@ class PurchaseServiceImpl @Inject()(
   private[services] def toCompanyCurrency(currency: String, amount: Double): Double =
     amount / exchangeRateService.getExchangeRate(companyCurrency, currency)
 
-  private[services] def transferFund(customerWallet: Wallet, amt: Double, currency: String): Boolean = {
-    val amtInCustomerCurrency = amt / exchangeRateService.getExchangeRate(customerWallet.currency, currency)
+  private[services] def transferFund(customerWallet: Wallet, productSale: ProductSale): Boolean = {
+    val amtInCustomerCurrency = productSale.price / exchangeRateService.getExchangeRate(
+      customerWallet.currency,
+      productSale.currency
+    )
     if (walletDataService.debit(customerWallet.id, amtInCustomerCurrency)) {
-      if (walletDataService.credit(companyWalletId, toCompanyCurrency(currency, amt))) {
-        logger.debug(s"$amt credit to company from ${customerWallet.id}")
+      if (walletDataService.credit(companyWalletId, toCompanyCurrency(productSale.currency, productSale.price))) {
+        logger.debug(s"${productSale.price} credit to company from ${customerWallet.id}")
+        productDataService.updateProductLeft(productSale.product_id)
         true
       } else {
-        logger.warn(s"crediting to company account failed, refunding $amt to customer (wallet: ${customerWallet.id})")
+        logger.warn(
+          s"crediting to company account failed, refunding ${productSale.price} to customer (wallet: ${customerWallet.id})"
+        )
         if (!walletDataService.credit(customerWallet.id, amtInCustomerCurrency)) {
           // inform customer service etc.
           logger.error("human intervention needed to do refund")
