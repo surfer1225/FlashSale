@@ -1,7 +1,7 @@
 package services
 
 import dao.{ProductDataService, WalletDataService}
-import model.Messages.{ProductInfo, ProductSale, Wallet}
+import model.Messages.{ProductSale, Wallet}
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 
