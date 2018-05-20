@@ -30,3 +30,15 @@ Update operations are done to the refreshable cache as well in a synchronized wa
 ExchangeRate service should rely on third party API
 
 Front-End codes are in "views" package, which right now is only a simple message
+
+
+# Versioning
+The application uses the following convention for versioning: **_major.minor.hotfix_**.
+
+The following details which the version bump is appliable
+- major: any non-compatible changes are added
+- minor: any backward-compatible changes are added
+- hotfix: all bug and hot fixes
+
+# Scala formatting commands
+sbt scalafmt
