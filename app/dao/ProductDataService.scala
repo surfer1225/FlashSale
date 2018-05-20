@@ -14,7 +14,9 @@ trait ProductDataService {
 
 class ProductDataServiceImpl extends ProductDataService {
   override def getProduct(productId: Long): Option[ProductSale] = {
-    Some(ProductSale(123, 10.0, "SGD", 1000, 100, 100000))
+    if (productId == 3)
+      Some(ProductSale(3, 10.0, "SGD", 1000, 100, 100000))
+    else None
   }
 
   override def getFlashSale(countryId: String): List[ProductSale] = {
@@ -25,5 +27,6 @@ class ProductDataServiceImpl extends ProductDataService {
     )
   }
 
-  override def updateProductLeft(productId: Long): Future[Unit] = ???
+  //FIXME
+  override def updateProductLeft(productId: Long): Future[Unit] = Future.successful()
 }
