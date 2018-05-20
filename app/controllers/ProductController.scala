@@ -3,7 +3,7 @@ package controllers
 import javax.inject._
 import play.api.libs.json._
 import play.api.mvc._
-import services.PurchaseService
+import services.{PurchaseService, PurchaseSuccess}
 
 @Singleton
 class ProductController @Inject()(cc: ControllerComponents, purchaseService: PurchaseService)
@@ -13,13 +13,15 @@ class ProductController @Inject()(cc: ControllerComponents, purchaseService: Pur
     val jsBody: Option[JsValue] = request.body.asJson
     jsBody
       .map { body =>
-        //TODO, add error handling for userId
-        val userId = (body \ "user_id").as[Long]
-
-        if (purchaseService.makePurchase(productId, userId)) {
-          Ok("Purchase Successful")
-        } else {
-          Ok("Purchase Failed")
+        (body \ "user_id").validate[Long] match {
+          case s: JsSuccess[Long] =>
+            if (purchaseService.makePurchase(productId, s.get) == PurchaseSuccess) {
+              Ok("Purchase Successful")
+            } else {
+              Ok("Purchase Failed")
+            }
+          case e: JsError =>
+            BadRequest("Error parsing user_id as a \"Long\" number")
         }
       }
       .getOrElse {
@@ -29,6 +31,6 @@ class ProductController @Inject()(cc: ControllerComponents, purchaseService: Pur
 
   def getFlashSale(countryId: String): Action[AnyContent] = Action {
     val flashSales = purchaseService.getFlashSale(countryId)
-    Ok(Json.toJson(flashSales))
+    Ok(Json.prettyPrint(Json.obj("sales" -> Json.toJson(flashSales))))
   }
 }

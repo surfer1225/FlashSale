@@ -4,11 +4,17 @@ import dao.{ProductDataService, WalletDataService}
 import javax.inject._
 import model.Messages.{ProductSale, Wallet}
 
+sealed trait PurchaseStatus
+case object PurchaseSuccess    extends PurchaseStatus
+case object PaymentFailure     extends PurchaseStatus
+case object CreditFailure      extends PurchaseStatus
+case object ManualIntervention extends PurchaseStatus
+
 trait PurchaseService {
   final val companyWalletId = 1
   final val companyCurrency = "SGD"
-  //TODO: consider changing the return type to PurchaseStatus
-  def makePurchase(productId: Long, userId: Long): Boolean
+
+  def makePurchase(productId: Long, userId: Long): PurchaseStatus
 
   def getFlashSale(countryId: String): List[ProductSale]
 
@@ -22,12 +28,12 @@ class PurchaseServiceImpl @Inject()(
 ) extends PurchaseService
     with FlashSaleLogger {
 
-  override def makePurchase(productId: Long, userId: Long): Boolean = {
+  override def makePurchase(productId: Long, userId: Long): PurchaseStatus = {
     val productSaleOpt = productDataService.getProduct(productId)
     val walletInfoOpt  = walletDataService.getWalletInfo(userId)
     (productSaleOpt, walletInfoOpt) match {
       case (Some(productSale), Some(walletInfo)) => transferFund(walletInfo, productSale)
-      case _                                     => false
+      case _                                     => PaymentFailure
     }
   }
 
@@ -38,16 +44,17 @@ class PurchaseServiceImpl @Inject()(
   private[services] def toCompanyCurrency(currency: String, amount: Double): Double =
     amount / exchangeRateService.getExchangeRate(companyCurrency, currency)
 
-  private[services] def transferFund(customerWallet: Wallet, productSale: ProductSale): Boolean = {
+  private[services] def transferFund(customerWallet: Wallet, productSale: ProductSale): PurchaseStatus = {
     val amtInCustomerCurrency = productSale.price / exchangeRateService.getExchangeRate(
       customerWallet.currency,
       productSale.currency
     )
     if (walletDataService.debit(customerWallet.id, amtInCustomerCurrency)) {
-      if (walletDataService.credit(companyWalletId, toCompanyCurrency(productSale.currency, productSale.price))) {
+      val companyEarning = toCompanyCurrency(productSale.currency, productSale.price)
+      if (walletDataService.credit(companyWalletId, companyEarning)) {
         logger.debug(s"${productSale.price} credit to company from ${customerWallet.id}")
         productDataService.updateProductLeft(productSale.product_id)
-        true
+        PurchaseSuccess
       } else {
         logger.warn(
           s"crediting to company account failed, refunding ${productSale.price} to customer (wallet: ${customerWallet.id})"
@@ -55,12 +62,14 @@ class PurchaseServiceImpl @Inject()(
         if (!walletDataService.credit(customerWallet.id, amtInCustomerCurrency)) {
           // inform customer service etc.
           logger.error("human intervention needed to do refund")
+          ManualIntervention
+        } else {
+          CreditFailure
         }
-        false
       }
     } else {
       logger.error("failed to collect money from customer")
-      false
+      PaymentFailure
     }
   }
 
