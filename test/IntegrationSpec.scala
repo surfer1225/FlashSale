@@ -49,7 +49,7 @@ class IntegrationSpec extends PlaySpecification {
       status(purchaseStatus) must equalTo(OK)
       contentAsString(purchaseStatus) mustEqual "Purchase Failed"
     }
-    
+
     // Test Get Current Flash Sale API
     "Get some flash sales data" in new WithApplication {
       private val sales = route(app, FakeRequest(GET, "/sales/current?country=SG")).get

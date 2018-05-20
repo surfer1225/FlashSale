@@ -32,6 +32,12 @@ object Messages {
       (JsPath \ "time_left").read[Long]
   )(ProductSale.apply _)
 
+  implicit val walletRead: Reads[Wallet] = (
+    (JsPath \ "id").read[Long] and
+      (JsPath \ "balance").read[Double] and
+      (JsPath \ "currency").read[String]
+  )(Wallet.apply _)
+
   // all the implicit writes
   implicit val userWrite: Writes[User] = (o: User) => Json.obj("user_id" -> o.user_id)
 
