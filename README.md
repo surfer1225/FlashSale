@@ -1,13 +1,13 @@
 # FlashSale API
 
-FlashSale API, including 3 APIs
+FlashSale API, including 3 APIs:
 
-GET /wallet/{id} to retrieve wallet information
-POST /products/{id}/purchase to purchase products under flash sale on the website
-GET /sales/current?country=SG to view current flash sale.
+- GET /wallet/{id} to retrieve wallet information
+- POST /products/{id}/purchase to purchase products under flash sale on the website
+- GET /sales/current?country=SG to view current flash sale.
 
 # Run the Application
-once you have checkout your project in your IDE
+Once you have checkout your project in your IDE,
 simply run "sbt start" to run the application
 
 # Test the application
