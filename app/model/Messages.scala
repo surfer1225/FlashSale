@@ -12,7 +12,6 @@ object Messages {
   // this case class is not used yet, it joins with ProductSale on product_id
   case class ProductInfo(product_id: Long, name: String, description: String, country: String)
 
-  //FIXME: check the implications for total items and remaining items, the way to compute time
   case class ProductSale(
       product_id: Long,
       price: Double,

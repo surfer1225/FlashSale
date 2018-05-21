@@ -2,7 +2,8 @@
 # Routes
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
-GET     /                           controllers.WalletController.index
+GET     /                           controllers.HomeController.index
+GET     /seed                       controllers.HomeController.seed
 GET     /wallet/:id                 controllers.WalletController.getWallet(id: Long)
 POST    /products/:id/purchase      controllers.ProductController.purchase(id: Long)
 
